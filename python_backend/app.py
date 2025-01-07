@@ -71,7 +71,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model = InceptionResnetV1(pretrained=None, classify=False).to(device)
 
 # model = InceptionResnetV1(pretrained=None, classify=False)
-checkpoint = torch.load("20180402-114759-vggface2.pt", map_location=device)
+checkpoint = torch.load("models/20180402-114759-vggface2.pt", map_location=device)
 filtered_checkpoint = {k: v for k, v in checkpoint.items() if not k.startswith("logits.")}
 model.load_state_dict(filtered_checkpoint)
 model = model.to(device).eval()
