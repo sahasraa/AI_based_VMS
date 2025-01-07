@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Remove focus outline and hover border for Ant Design Select */
+.ant-select-selector {
+  @apply border-transparent focus:outline-none focus:ring-0 hover:border-transparent;
+}
+
+/* Apply focus outline and ring to make sure it's visually clean and consistent */
+.ant-select-selector:focus {
+  @apply ring-0;
+}
+
+/* Optionally, add custom hover styles for the select box */
+.ant-select:hover .ant-select-selector {
+  @apply border-transparent;
+}
+
+/* Add specific styles for the dropdown if necessary */
+.ant-select-dropdown {
+  @apply bg-white border-gray-300;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}

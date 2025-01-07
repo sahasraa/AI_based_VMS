@@ -1,0 +1,15 @@
+version: '3.11'
+
+services:
+  python-backend:
+    build:
+      context: .  # The current directory containing Dockerfile
+    image: python-backend:latest  # Specify the image name and tag
+    container_name: python-backend
+    ports:
+      - "5000:5000"  # Map container port 5000 to host port 5000
+    environment:
+      MONGO_URI: "mongodb+srv://sahasra:4Jan%401998@visitormanagement.th43u.mongodb.net/?retryWrites=true&w=majority&appName=VisitorManagement"  # Replace with your MongoDB Atlas URI
+    volumes:
+      - ./static:/app/static  # Mount static folder for live updates
+    restart: always

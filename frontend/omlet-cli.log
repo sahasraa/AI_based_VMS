@@ -1,0 +1,24 @@
+[ERROR 11-23 10:56:38.384][JS] Error: invalid json response body at https://feta.omlet.dev/api/cli-tracking/events reason: Unexpected end of JSON input
+[ERROR 11-23 10:56:38.387][JS] Stack: FetchError: invalid json response body at https://feta.omlet.dev/api/cli-tracking/events reason: Unexpected end of JSON input
+    at C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\node-fetch\lib\index.js:273:32
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async apiRequest (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\@omlet\cli\dist\node-src\apiClient.js:247:24)
+[ERROR 11-23 10:58:20.151][JS] Error: No such file or directory
+[ERROR 11-23 10:58:20.152][JS] Stack: PathNotFound: No such file or directory
+    at analyzeRepo (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\@omlet\cli\dist\node-src\analyzer.js:691:23)
+    at async init (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\@omlet\cli\dist\node-src\analyzer.js:928:44)
+    at async Command.<anonymous> (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\@omlet\cli\dist\node-src\cli.js:316:9)
+    at async Command.parseAsync (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\commander\lib\command.js:935:5)
+[ERROR 11-23 10:58:20.153][JS] Context: {
+  "path": "F:/Vms/vsm/frontend/yes"
+}
+[ERROR 11-23 10:58:21.324][JS] Error: invalid json response body at https://feta.omlet.dev/api/cli-tracking/events reason: Unexpected end of JSON input
+[ERROR 11-23 10:58:21.324][JS] Stack: FetchError: invalid json response body at https://feta.omlet.dev/api/cli-tracking/events reason: Unexpected end of JSON input
+    at C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\node-fetch\lib\index.js:273:32
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async apiRequest (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\@omlet\cli\dist\node-src\apiClient.js:247:24)
+[ERROR 11-23 10:58:21.890][JS] Error: invalid json response body at https://feta.omlet.dev/api/cli-tracking/events reason: Unexpected end of JSON input
+[ERROR 11-23 10:58:21.890][JS] Stack: FetchError: invalid json response body at https://feta.omlet.dev/api/cli-tracking/events reason: Unexpected end of JSON input
+    at C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\node-fetch\lib\index.js:273:32
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async apiRequest (C:\Users\DELL\AppData\Local\npm-cache\_npx\6f6f8d36092b5491\node_modules\@omlet\cli\dist\node-src\apiClient.js:247:24)

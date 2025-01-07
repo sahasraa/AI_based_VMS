@@ -1,0 +1,512 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+            padding: 10px;
+        }
+
+        .video-feed {
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-feed h2 {
+            color: #fff;
+            background-color: #343a40;
+            padding: 10px;
+        }
+
+        .video-feed img {
+            width: 100%;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .faces-logins {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .face-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .face-item:hover {
+            background-color: #f1f1f1;
+            transform: scale(1.02);
+        }
+
+        .face-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .face-item p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .recognized {
+            color: green;
+            font-weight: bold;
+        }
+
+        #enable-tts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #enable-tts:hover {
+            background-color: #218838;
+        }
+
+        #dynamic-name, #welcome-message {
+            text-align: center;
+            margin: 10px 0;
+            color: #333;
+        }
+    </style>
+    <script>
+        let ttsEnabled = false;
+        let lastSpokenName = null;
+
+        function enableTTS() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("Speech enabled");
+                window.speechSynthesis.speak(utterance);
+                ttsEnabled = true;
+                document.getElementById('enable-tts').style.display = 'none';
+            } else {
+                alert("Your browser does not support speech synthesis.");
+            }
+        }
+
+        async function updateFaces() {
+            const facesDiv = document.getElementById("faces");
+            const dynamicNameElement = document.getElementById("dynamic-name");
+            const welcomeMessageElement = document.getElementById("welcome-message");
+
+            try {
+                const response = await fetch('/recognized_faces');
+                const data = await response.json();
+
+                // Sort by latest timestamp
+                data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                if (data.length > 0) {
+                    const latestFace = data[0];
+                    dynamicNameElement.innerText = `Hi, ${latestFace.name}`;
+                    welcomeMessageElement.innerText = "Welcome to Brihaspathi";
+
+                    if (ttsEnabled && lastSpokenName !== latestFace.name) {
+                        const utterance = new SpeechSynthesisUtterance(`Hi ${latestFace.name}, Welcome to Brihaspathi`);
+                        window.speechSynthesis.speak(utterance);
+                        lastSpokenName = latestFace.name;
+                    }
+                } else {
+                    dynamicNameElement.innerText = '';
+                    welcomeMessageElement.innerText = '';
+                }
+
+                // Update facesDiv
+                facesDiv.innerHTML = ""; // Clear existing items
+                data.forEach(face => {
+                    const item = createFaceItem(face.name, face.timestamp, face.image, "recognized");
+                    facesDiv.appendChild(item);
+                });
+            } catch (error) {
+                console.error("Error fetching recognized faces:", error);
+            }
+        }
+
+        function createFaceItem(name, timestamp, imageBase64, statusClass) {
+            const container = document.createElement("div");
+            container.className = "face-item";
+
+            const img = document.createElement("img");
+            img.src = `data:image/jpeg;base64,${imageBase64}`;
+            img.alt = name;
+
+            const details = document.createElement("div");
+            const nameTag = document.createElement("p");
+            nameTag.innerText = `Name: ${name}`;
+            const timeTag = document.createElement("p");
+            timeTag.className = "timestamp";
+            timeTag.innerText = `Time: ${timestamp}`;
+            const statusTag = document.createElement("p");
+            statusTag.className = statusClass;
+            statusTag.innerText = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+
+            details.appendChild(nameTag);
+            details.appendChild(timeTag);
+            details.appendChild(statusTag);
+
+            container.appendChild(img);
+            container.appendChild(details);
+            return container;
+        }
+
+        setInterval(updateFaces, 3000);
+    </script>
+</head>
+<body>
+    <h1>Face Recognition System</h1>
+    <div class="grid-container">
+        <div class="video-feed">
+            <h2>Live Video Stream</h2>
+            <img src="/video_feed" alt="Video Stream Not Available">
+        </div>
+        <div class="faces-logins">
+            <h2>Recognized Entries</h2>
+            <div id="faces"></div>
+        </div>
+    </div>
+    <h2 id="dynamic-name"></h2>
+    <h3 id="welcome-message"></h3>
+    <button id="enable-tts" onclick="enableTTS()">Enable Speech</button>
+</body>
+</html>
+
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition System</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-top: 10px;
+            color: #007bff;
+        }
+
+        /* Container Layout */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+            margin: 20px auto;
+            max-width: 1200px;
+            padding: 10px;
+        }
+
+        /* Video Feed Section */
+        .video-feed {
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .video-feed h2 {
+            color: #fff;
+            background-color: #343a40;
+            margin: 0;
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .video-feed img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        /* Face Logins Section */
+        .faces-logins {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .faces-logins h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .face-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .face-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .face-item p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .recognized {
+            color: green;
+            font-weight: bold;
+        }
+
+        /* Speech Button */
+        #enable-tts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+        }
+
+        #enable-tts:hover {
+            background-color: #218838;
+        }
+
+        /* Welcome Message */
+        #dynamic-name, #welcome-message {
+            text-align: center;
+            margin: 10px 0;
+            color: #333;
+        }
+    </style>
+    <script>
+        let ttsEnabled = false;
+        let lastSpokenName = null;
+
+        function enableTTS() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("Speech enabled");
+                window.speechSynthesis.speak(utterance);
+                ttsEnabled = true;
+                document.getElementById('enable-tts').style.display = 'none';
+            } else {
+                alert("Your browser does not support speech synthesis.");
+            }
+        }
+
+        function updateFaces() {
+            const facesDiv = document.getElementById("faces");
+            const dynamicNameElement = document.getElementById("dynamic-name");
+            const welcomeMessageElement = document.getElementById("welcome-message");
+
+            fetch('/recognized_faces')
+    .then(response => response.json())
+    .then(data => {
+        if (data.length > 0) {
+            const latestFace = data[data.length - 1];
+            dynamicNameElement.innerText = `Hi, ${latestFace.name}`;
+            welcomeMessageElement.innerText = "Welcome to Brihaspathi";
+
+            
+            if (ttsEnabled && lastSpokenName !== latestFace.name) {
+                const utterance = new SpeechSynthesisUtterance(`Hi ${latestFace.name}, Welcome to Brihaspathi`);
+                window.speechSynthesis.speak(utterance);
+                lastSpokenName = latestFace.name;
+            }
+
+            // Display the name for 2 seconds
+            // setTimeout(() => {
+            //     dynamicNameElement.innerText = '';
+            //     welcomeMessageElement.innerText = '';
+            // }, 500);
+
+            // // Clear the latestFace after 10 seconds
+            // setTimeout(() => {
+            //     if (dynamicNameElement.innerText === `Hi, ${latestFace.name}`) {
+            //         dynamicNameElement.innerText = '';
+            //         welcomeMessageElement.innerText = '';
+            //     }
+            // }, 10000);
+
+            // Update or add faces
+            data.forEach(face => {
+                const existingItem = document.querySelector(`[data-name="${face.name}"]`);
+                if (existingItem) {
+                    const timeTag = existingItem.querySelector('.timestamp');
+                    timeTag.innerText = `Time: ${face.timestamp}`;
+                } else {
+                    const item = createFaceItem(face.name, face.timestamp, face.image, "recognized");
+                    facesDiv.appendChild(item);
+                }
+            });
+        }
+    });
+
+
+            // fetch('/recognized_faces')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         if (data.length > 0) {
+            //             const latestFace = data[data.length - 1];
+            //             dynamicNameElement.innerText = `Hi, ${latestFace.name}`;
+            //             welcomeMessageElement.innerText = "Welcome to Brihaspathi";
+
+            //             if (ttsEnabled && lastSpokenName !== latestFace.name) {
+            //                 const utterance = new SpeechSynthesisUtterance(`Hi ${latestFace.name}, Welcome to Brihaspathi`);
+            //                 window.speechSynthesis.speak(utterance);
+            //                 lastSpokenName = latestFace.name;
+            //             }
+
+            //             // Display the name for 2 seconds
+            //             setTimeout(() => {
+            //                 dynamicNameElement.innerText = '';
+            //                 welcomeMessageElement.innerText = '';
+            //             }, 2000);
+
+            //             // Update or add faces
+            //             data.forEach(face => {
+            //                 const existingItem = document.querySelector(`[data-name="${face.name}"]`);
+            //                 if (existingItem) {
+            //                     const timeTag = existingItem.querySelector('.timestamp');
+            //                     timeTag.innerText = `Time: ${face.timestamp}`;
+            //                 } else {
+            //                     const item = createFaceItem(face.name, face.timestamp, face.image, "recognized");
+            //                     facesDiv.appendChild(item);
+            //                 }
+            //             });
+            //         }
+            //     });
+        }
+
+        function createFaceItem(name, timestamp, imageBase64, statusClass) {
+            const container = document.createElement("div");
+            container.className = "face-item";
+            container.setAttribute("data-name", name); // Set data attribute for tracking
+
+            const img = document.createElement("img");
+            img.src = `data:image/jpeg;base64,${imageBase64}`;
+            img.alt = name;
+
+            const details = document.createElement("div");
+            const nameTag = document.createElement("p");
+            nameTag.innerText = `Name: ${name}`;
+            const timeTag = document.createElement("p");
+            timeTag.className = "timestamp"; // Add class for easy updating
+            timeTag.innerText = `Time: ${timestamp}`;
+            const statusTag = document.createElement("p");
+            statusTag.className = statusClass;
+            statusTag.innerText = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+
+            details.appendChild(nameTag);
+            details.appendChild(timeTag);
+            details.appendChild(statusTag);
+
+            container.appendChild(img);
+            container.appendChild(details);
+            return container;
+        }
+
+        setInterval(updateFaces, 3000);
+    </script>
+</head>
+<body>
+    <h1>Face Recognition System</h1>
+    <div class="grid-container">
+        <!-- Video Feed Section -->
+        <div class="video-feed">
+            <h2>Live Video Stream</h2>
+            <img src="/video_feed" alt="Video Stream Not Available">
+        </div>
+
+        <!-- Recognized Entries -->
+        <div class="faces-logins">
+            <h2>Recognized Entries</h2>
+            <div id="faces"></div>
+        </div>
+    </div>
+
+    <!-- Dynamic Messages -->
+    <h2 id="dynamic-name"></h2>
+    <h3 id="welcome-message"></h3>
+
+    <!-- Enable Speech Button -->
+    <button id="enable-tts" onclick="enableTTS()">Enable Speech</button>
+</body>
+</html>

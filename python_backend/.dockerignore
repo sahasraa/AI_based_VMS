@@ -1,0 +1,8 @@
+# Exclude unnecessary files
+.git
+*.log
+__pycache__/
+*.pyc
+*.pyo
+*.DS_Store
+node_modules/
